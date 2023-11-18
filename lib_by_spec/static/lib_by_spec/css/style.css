@@ -1,0 +1,84 @@
+.book__favorite-btn.active {
+    background-color: black; 
+    color: aliceblue;
+}
+
+.catalog {
+    display: grid;
+    grid-template-columns: 250px auto;
+    column-gap: 30px;
+    
+}
+
+.book-list {
+    display: grid;
+    /* grid-template-columns: repeat(2, 1fr); */
+    grid-auto-rows: 1fr;
+    
+    column-gap: 4%;
+    row-gap: 5px;
+
+    width: 100%;
+
+    list-style-type: none;
+}
+
+
+.book-list__cover {
+    display: flex;
+    border: 1px solid gray;
+}
+
+.book-list__item {
+    display: flex;
+    gap: 20px;
+    
+    width: 100%;
+    
+    padding: 10px;
+    
+    font-weight: 500;
+    
+    
+    /* background-color: #3f2819; */
+    border: 2px solid #523d32;
+
+    border-radius: 5px;
+    /* border-bottom-left-radius: 25px; */
+    /* border-top-right-radius: 25px;
+    border-bottom-right-radius: 25px; */
+}
+
+.book__authors {
+    /* text-overflow: ellipsis;
+    overflow: hidden;  */
+    /* white-space: nowrap; */
+    /* max-height: 1.5rem; */
+}
+
+.book-list__item a {
+    color: rgb(15, 104, 15);
+    font-weight: 600;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.pagination > * {
+    padding: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    
+    font-size: 1.2rem;
+    color: white;
+
+    background-color: rgb(0, 255, 255);
+    background-color: black;
+    
+    border-radius: 5px;
+
+
+}

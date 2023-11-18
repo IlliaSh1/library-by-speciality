@@ -1,0 +1,122 @@
+{% extends 'core/base.html' %}
+
+{% load static %}
+{% load static lib_by_spec_tags %}
+
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'lib_by_spec/css/style.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<main>
+  <section>
+    <div class="catalog">
+      <form method="get" action="{% url 'lib_by_spec:index' %}">
+        {{ search_book_form }}
+        <button type="submit">Подобрать</button>
+      </form>
+        
+      <div>
+        {% if book_list %}
+          <!-- Пагинация -->
+          <div class="pagination">
+            {% if cur_page > 1  %}
+            <a href="?{{ get_params }}page_num={{ prev_page }}">Назад</a>
+            {% endif %}
+            {% for i_prev_page in prev_pages  %}
+                {% if i_prev_page > 0 %}
+                <a href="?{{ get_params }}page_num={{ i_prev_page }}">{{ i_prev_page }}</a>
+                {% endif %}
+            {% endfor %}
+
+            <span>{{ cur_page }}</span>
+            
+            {% for i_next_page in next_pages  %}
+                {% if i_next_page <= last_page %}
+                <a href="?{{ get_params }}page_num={{ i_next_page }}">{{ i_next_page }}</a>
+                {% endif %}
+            {% endfor %}
+
+            {% if cur_page != last_page  %}
+            <a href="?{{ get_params }}page_num={{ next_page }}">Дальше</a>
+            {% endif %}
+          </div>
+          <!-- Каталог -->
+          <ul id = "lib_catalog" class="book-list">
+          {% for book in book_list %}
+            <li class="book-list__item" data-id="{{ book.id }}">
+              <!-- Обложка книги -->
+              <img src="{% static book.cover %}" class="book-list__cover" alt="Обложка книги">
+              <div>
+                  <a href="{% url 'lib_by_spec:detail' book.id %}">{{ book.name }}</a>
+                  {% if book.disciplines.count > 0 %}
+                    <p>
+                      Дисциплины:  
+                      {% for discipline in book.disciplines.all  %}
+                          {{discipline}}{% if discipline != book.disciplines.all.last %},{% endif %}
+                      {% endfor %}
+                    </p>
+                  {% endif %} 
+                  {% if book.year_published %}
+                      <p>Год издания: {{book.year_published}}</p>
+                  {% endif %}
+                  {% if book.page_count %}
+                      <p>Количество страниц: {{ book.page_count}}</p>
+                  {% endif %}
+                  {% if book.authors.count > 0 %}
+                  
+                  <p class="book__authors">Автор{% if book.authors.all.count > 1 %}ы{% endif %}: 
+                      
+                      {% for author in book.authors.all  %}
+                      <span>
+                          {{ author }}{% if author != book.authors.all.last %},{% endif %}
+                      </span>
+                      {% endfor %}
+                  </p>
+                  {% endif %}
+                  <button type="button" class="book__favorite-btn
+                      {% if user|has_book_in_favorites:book.id %}active{% endif %}" 
+
+                      
+                      data-url="{% url 'lib_by_spec:favorite_book' book.id %}" 
+                      data-action="addToFavorite">
+                      В избранное
+                  </button>
+              </div>
+            </li>
+          {% endfor %}
+          </ul>
+          <!-- Пагинация -->
+          <div class="pagination">
+              {% if cur_page > 1  %}
+              <a href="?{{ get_params }}page_num={{ prev_page }}">Назад</a>
+              {% endif %}
+              {% for i_prev_page in prev_pages  %}
+                  {% if i_prev_page > 0 %}
+                  <a href="?{{ get_params }}page_num={{ i_prev_page }}">{{ i_prev_page }}</a>
+                  {% endif %}
+              {% endfor %}
+
+              <span>{{ cur_page }}</span>
+              
+              {% for i_next_page in next_pages  %}
+                  {% if i_next_page <= last_page %}
+                  <a href="?{{ get_params }}page_num={{ i_next_page }}">{{ i_next_page }}</a>
+                  {% endif %}
+              {% endfor %}
+
+              {% if cur_page != last_page  %}
+              <a href="?{{ get_params }}page_num={{ next_page }}">Дальше</a>
+              {% endif %}
+          </div>
+        {% else %}
+            <p>Книги не найдены. <a href="{% url 'lib_by_spec:index' %}">Вернуться на главную</a></p>
+        {% endif %} 
+      </div>
+    </div>
+  </section>
+</main>
+            <script src="{% static 'lib_by_spec/js/index.js' %}"></script>
+{% endblock  %}

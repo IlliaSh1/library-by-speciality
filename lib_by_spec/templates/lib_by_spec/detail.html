@@ -1,0 +1,79 @@
+{% extends 'core/base.html' %}
+
+{% load static %}
+{% load static lib_by_spec_tags %}
+
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'lib_by_spec/css/style.css' %}">
+{% endblock %}
+
+{% block content %}
+
+{% if book %}
+<main>
+    <section>
+        <div class="wrapper">
+            
+            <img src="{% static book.cover %}" class="book-list__cover" alt="Обложка книги">
+            <h1>{{ book.name }}</h1>
+            {% if book.year_published %}
+            <p>Год издания: {{book.year_published}}</p>
+            {% endif %}
+            {% if book.page_count %}
+                <p>Количество страниц: {{ book.page_count}}</p>
+            {% endif %}
+            {% if book.authors.count > 0 %}
+            <p>Автор{% if book.authors.all.count > 1 %}ы{% endif %}: 
+                {% for author in book.authors.all  %}
+                <span>
+                    {{ author }}{% if author != book.authors.all.last %},{% endif %}
+                </span>
+                {% endfor %}
+            </p>
+            {% endif %}
+            {% if book.isbn %}
+                
+                <p>ISBN: {{ book.isbn }}</p>
+            {% endif %}
+            <div>
+                <a href="{{ book.link }}">Посмотреть на сайте</a>
+            </div>
+            <div>
+                <ul class="list">
+                    {% if book.annotation %}
+                    <li>
+                        <h4>Аннотация</h4>
+                        <p>{{book.annotation}}</p>
+                    </li>
+                    {% endif %}
+                    {% if book.bibl_record %}
+                    <li>
+                        <h4>Бибзапись</h4>
+                        <p>{{book.bibl_record}}</p>
+                    </li>
+                    {% endif %}
+                </ul>
+                <div>
+                    {% if book.disciplines.count > 0 %}
+                    <h4>
+                        Дисциплины:
+                    </h4>
+                    <ul>
+                        {% for discipline in book.disciplines.all  %}
+                        <li>
+                            {{ discipline }}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+            
+{% else %}
+    <p>Книга не найдена.</p>
+{% endif %} 
+{% endblock %}

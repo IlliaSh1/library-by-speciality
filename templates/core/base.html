@@ -1,0 +1,46 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    {% block head %}
+    {% endblock %}
+    <link rel="stylesheet" href="{% static 'lib_by_spec/css/base.css' %}">
+</head>
+<body>
+    <header class="header">
+        <div class="wrapper header__container">
+            <a class="header__logo" href="{% url 'home' %}">На главную</a>
+
+            <div class="wrapper">
+            <ul class="list">
+                <li>
+                    
+                    {% if user.is_authenticated %}
+                        Пользователь: {{ user }}
+                        <a href="{% url 'logout' %}">Выйти</a>
+                    {% else %}
+                        <a href="{% url 'login' %}">Войти</a> / <a href="{% url 'register' %}">Регистрация</a>
+                    {% endif %} 
+                </li>
+            </ul>
+        </div>
+    </header>
+    <div class="wrapper">
+    {% block content %}
+    {% endblock %}
+    </div>
+
+    <footer>
+        <div class="wrapper">
+            <p>
+                Шамаров Илья Глебович
+            </p>
+            <p>группа 221-321</p>
+        </div>
+    </footer>
+</body>
+</html>

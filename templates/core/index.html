@@ -1,0 +1,22 @@
+{% extends 'core/base.html' %}
+{% block content %}
+    <main>
+        <section>
+
+                <h1>Главная страница</h1>
+                <ul>
+                    <li>
+                        <a href="{% url 'lib_by_spec:index' %}">Список доступных книг</a>
+                    </li>
+
+                    <li>
+                        <a href="{% url 'book_parser:index' %}">Парсинг</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'discipline_selection:select' %}">Добавление дисциплин</a>
+                    </li>
+                </ul>
+
+        </section>
+    </main>
+{% endblock %}

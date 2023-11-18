@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <header></header>
+    <main>
+        <form action="{% url 'book_parser:start_parse'%}" method="post">
+            {% csrf_token %}
+            
+                <input name="znanium" value="true" hidden>
+            
+            {% if error_message %}
+                <p><strong>{{ error_message }}</strong></p>
+            {% endif %}
+            <button class="submit">
+                Начать парсинг
+            </button>
+        </form>
+        <h2>
+            <a href="{% url 'book_parser:parsed_books_api' %}">
+                Parsed books api
+            </a>
+        </h2>
+    </main>
+    <footer></footer>
+</body>
+</html>
