@@ -10,14 +10,24 @@ from django.urls import reverse
 
 # drf serializing.
 from rest_framework import generics, filters
-from .serializers import BookSerializer
+from rest_framework.viewsets import ModelViewSet
 
-from rest_framework.permissions import AllowAny
+from rest_framework.decorators import action
+from rest_framework.response import Response
+
+from .serializers import BookSerializer, AuthorSerializer
+
+from rest_framework.permissions import AllowAny, IsAuthenticated
+## drf filtering.
+from django_filters.rest_framework import DjangoFilterBackend
 # libraries for async parsing.
 import requests, asyncio, aiohttp, httpx
 from bs4 import BeautifulSoup
-# models
+# Models.
 from .models import Book, Author
+from lib_by_spec.models import Favorite_book
+
+from django.db.models import Q
 # Saving parsed images of book covers.
 import book_parser
 import os.path
@@ -25,20 +35,85 @@ import os.path
 import time
 
 # Api for parsed books.
-# Book list.
+class BookApiView(ModelViewSet):
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+    permission_classes = [AllowAny, ]
+    
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['year_published']
+    search_fields = ['name']
+    ordering_fields = ['year_published', 'name']
+    
+    # Get all books marked as favorite for current user.
+    @action(detail=False, methods=['GET'], permission_classes=[IsAuthenticated])
+    def get_favorite_books(self, request):
+        user = request.user
+        favorite_books = user.favorite_books.all()
+        serializer = BookSerializer(favorite_books, many=True)
+        return Response(serializer.data)
+
+    # Add book to favorite for current user.
+    @action(detail=True, methods=['POST'], permission_classes=[IsAuthenticated])
+    def add_to_favorite(self, request, pk=None):
+        try:
+            book = self.get_object()
+        except Book.DoesNotExist:
+            return Response({"error": "Book not found."}, status=404)
+
+        user = request.user
+        
+        favorite_book, was_created = Favorite_book.objects.get_or_create(
+            user=user,
+            book=book
+        )
+
+        if not was_created:
+            favorite_book.delete()
+            return Response({"message": f"Book '{book.name}' removed from favorite."}, status=200)
+        
+        
+        return Response({"message": f"Book '{book.name}' added to favorite."}, status=200)
+
+    
+
+
+
 class BookListApiView(generics.ListAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
     permission_classes = [AllowAny, ]
     
     filter_backends = [filters.SearchFilter,]
+    
+    
     search_fields = ['name']
+    ordering_fields = ['year', 'name']
+    
+    def get_queryset(self):
+        # context = super().get_queryset()
+
+        # query = self.request.query_params.get('authors', '')
+        year_published = self.request.query_params.get('year', None)
+        if year_published:
+            return self.queryset.filter(Q(year_published=year_published))    
+        return self.queryset.filter()
 
 class BookDetailApiView(generics.RetrieveAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
     permission_classes = [AllowAny, ]
 
+
+# Author Api    
+class AuthorApiView(ModelViewSet):
+    queryset = Author.objects.all()
+    serializer_class = AuthorSerializer
+    permission_classes = [AllowAny, ]
+
+
+
+# Classes and functions for parsing books from znanium.com.
 def index(request):
     return render(request, "book_parser/index.html", {})
 

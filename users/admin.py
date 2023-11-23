@@ -10,11 +10,13 @@ User = get_user_model()
 
 @admin.register(User)
 class UserAdmin(UserAdmin):
-    list_display = UserAdmin.list_display+('last_login', 'date_joined')
+    
+    list_display = ('id',)+UserAdmin.list_display+('last_login', 'date_joined')
     # list_filter = UserAdmin.list_filter+('time_created',)
-
+    
     inlines = [Favorite_bookInline]
     
+    list_display_links = ['username']
     # raw_id_fields = UserAdmin.raw_id_fields+('favorite_books',)
 
     # ordering = ('-last_login',)+UserAdmin.ordering

@@ -4,10 +4,47 @@ from django.contrib import admin
 
 
 from .models import Book, Author
+from discipline_selection.models import Discipline
 from discipline_selection. models import Discipline
 
+# Export from admin panel
+from import_export import resources
+from import_export.admin import ImportExportModelAdmin
+
+from import_export.fields import Field
+from import_export.widgets import ManyToManyWidget
+
+
+# Book
+## Resource for exporting books.
+class BookResource(resources.ModelResource):
+    authors = Field(
+        widget=ManyToManyWidget(model=Author, field='fullname'),
+    )
+    disciplines = Field(
+        widget=ManyToManyWidget(model=Book, field='disciplines'),
+    )
+    
+    class Meta:
+        model = Book
+
+    def dehydrate_authors(self, book):
+        data = []
+        for author in book.authors.all():
+            data.append(author.fullname)
+        joined_string = ", ".join(data)
+        return str(joined_string)
+    
+    def dehydrate_disciplines(self, book):
+        data = []
+        for discipline in book.disciplines.all():
+            data.append(discipline.name)
+        joined_string = ", ".join(data)
+        return str(joined_string)
+
+    
 @admin.register(Book)
-class BookAdmin(admin.ModelAdmin):
+class BookAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     fieldsets = [
         (None, {"fields": ["name", ("link","cover"), ("year_published", "pages_count")]}),
         ("Описание книги", {"fields": ["annotation", "bibl_record"]}),
@@ -34,8 +71,13 @@ class BookAdmin(admin.ModelAdmin):
 
     list_per_page = 100
     
+    resource_class = BookResource
 
-
+    # Custom method for exporting user favorite books.
+    def get_export_queryset(self, request):
+        # return super().get_export_queryset(request)
+        user = request.user
+        return user.favorite_books.all()
 
 # Author
 class BookAuthorInline(admin.TabularInline):
