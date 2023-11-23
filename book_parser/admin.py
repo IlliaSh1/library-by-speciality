@@ -18,6 +18,15 @@ from import_export.widgets import ManyToManyWidget
 # Book
 ## Resource for exporting books.
 class BookResource(resources.ModelResource):
+    # link = Field()
+    # name = Field()
+    # cover = Field()
+    # annotation = Field()
+    # bibl_record = Field()
+    # year_published = Field()
+    # pages_count = Field()
+    # isbn = Field()
+    
     authors = Field(
         widget=ManyToManyWidget(model=Author, field='fullname'),
     )

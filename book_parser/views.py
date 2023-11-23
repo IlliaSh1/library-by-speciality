@@ -84,19 +84,19 @@ class BookListApiView(generics.ListAPIView):
     serializer_class = BookSerializer
     permission_classes = [AllowAny, ]
     
-    filter_backends = [filters.SearchFilter,]
-    
-    
-    search_fields = ['name']
-    ordering_fields = ['year', 'name']
+    # filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    # search_fields = ['name']
+    # ordering_fields = ['year', 'name']
     
     def get_queryset(self):
         # context = super().get_queryset()
-
         # query = self.request.query_params.get('authors', '')
         year_published = self.request.query_params.get('year', None)
+        search_text = self.request.query_params.get('search_text', None)
         if year_published:
             return self.queryset.filter(Q(year_published=year_published))    
+        if search_text:
+            return self.queryset.filter(Q(name__icontains=search_text) | Q(authors__fullname=search_text))
         return self.queryset.filter()
 
 class BookDetailApiView(generics.RetrieveAPIView):
