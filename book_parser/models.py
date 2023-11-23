@@ -10,6 +10,9 @@ from django.contrib import admin
 from discipline_selection.models import Discipline
 from django.contrib.auth.models import AnonymousUser
 
+# History
+from simple_history.models import HistoricalRecords
+
 class Author(models.Model):
     fullname = models.CharField(
         verbose_name="ФИО",
@@ -90,6 +93,8 @@ class Book(models.Model):
     )
 
     list_per_page = 50
+    
+    history = HistoricalRecords() 
 
     def __str__(self):
         return self.name

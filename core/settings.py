@@ -48,8 +48,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     
     'users',
-    'rest_framework' # connecting drf
-    
+    'rest_framework', # DRF
+
+    'django_filters', # Filters.
+
+    'simple_history', # History of objects changes.
+    'import_export', # For exporting tables from admin panel.
+
     ## Debug toolbar. To use it, you should uncomment 
     ## middleware below and path in urls.py.
     #"debug_toolbar", 
@@ -70,6 +75,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    'simple_history.middleware.HistoryRequestMiddleware', # History middleware.
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -143,6 +150,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = '/var/www/example.com/static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

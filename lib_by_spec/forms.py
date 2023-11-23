@@ -58,7 +58,6 @@ class SearchBookGetForm(forms.Form):
     SORTING_OPTIONS = (
         ("year", "Году"),
         ("name", "Названию"),
-
     )
     
     
@@ -76,7 +75,7 @@ class SearchBookGetForm(forms.Form):
     
     def search(self, user):
 
-        # search_text        
+        # search text        
         val_search_text = self.cleaned_data['search_text'] or ''
         val_search_params = self.cleaned_data['search_params'] or ''
         
@@ -112,6 +111,7 @@ class SearchBookGetForm(forms.Form):
         if(user != AnonymousUser()):
             if(val_favorite_params != ''):
                 query &= Q(user = user)
+        
         # discipline
         val_discipline = self.cleaned_data['discipline'] or ''
         if(val_discipline != ''):
@@ -141,23 +141,33 @@ class SearchBookGetForm(forms.Form):
                 elif (val_year_published_params == 'sooner'):
                     query &= Q(year_published__lte = val_year_published) 
 
-        # sorting
+        # Sorting
         order_by_query_str = ''
 
-        val_sorting = self.cleaned_data['sorting'] or ''
-        val_sorting_params = self.cleaned_data['sorting_params'] or ''
+        val_sorting = self.cleaned_data['sorting'] or None
+        val_sorting_params = self.cleaned_data['sorting_params'] or None
         
-        if(val_sorting_params != ''):
+        # Reversing sorting if selected.
+        if val_sorting_params:
             order_by_query_str = '-'
         
-        if(val_sorting != ''):
-            if(val_sorting == 'year'):
-                order_by_query_str += "year_published"
-            if(val_sorting == 'name'):
-                order_by_query_str += "name"
+        sorting_keys = {
+            'year': "-year_published",
+            'name': "name",
+        }
+        
+        if val_sorting and val_sorting in sorting_keys:
+            order_by_query_str += sorting_keys[val_sorting]
         else: 
-            order_by_query_str = "year_published"
+            order_by_query_str += "-year_published"
+            
+        print('%s: ordering' % order_by_query_str)
 
+        if order_by_query_str[0:2] == '--':
+            order_by_query_str = order_by_query_str[2:]
+
+        print(order_by_query_str[0:1])
+        
         return Book.objects.filter(
             query
-        ).all().order_by(order_by_query_str)
+        ).order_by(order_by_query_str)

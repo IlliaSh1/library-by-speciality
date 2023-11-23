@@ -11,26 +11,16 @@
 }
 
 .book-list {
-    display: grid;
-    /* grid-template-columns: repeat(2, 1fr); */
-    grid-auto-rows: 1fr;
-    
-    column-gap: 4%;
+    display: flex;
+    flex-direction: column;
     row-gap: 5px;
 
     width: 100%;
-
-    list-style-type: none;
-}
-
-
-.book-list__cover {
-    display: flex;
-    border: 1px solid gray;
 }
 
 .book-list__item {
-    display: flex;
+    display: grid;
+    grid-template-columns: 25% 1fr;
     gap: 20px;
     
     width: 100%;
@@ -48,6 +38,13 @@
     /* border-top-right-radius: 25px;
     border-bottom-right-radius: 25px; */
 }
+
+.book-list__cover {
+    width: 100%;
+    border: 1px solid gray;
+}
+
+
 
 .book__authors {
     /* text-overflow: ellipsis;
